@@ -1,0 +1,27 @@
+workflows:
+  ios-workflow:
+    name: iOS IPA
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up Flutter platforms
+        script: |
+          flutter create . --platforms=ios,android --project-name preventivo_falegname_pro
+      - name: Get dependencies
+        script: |
+          flutter pub get
+      - name: Build IPA
+        script: |
+          flutter build ios --release --no-codesign
+          mkdir -p build/ios/ipa
+          cd build
+          mkdir -p ios/ipa/Payload
+          cp -r ios/iphoneos/Runner.app ios/ipa/Payload/
+          cd ios/ipa
+          zip -r PreventivoFalegname.ipa Payload
+    artifacts:
+      - build/ios/ipa/*.ipa
