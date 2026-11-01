@@ -1,1 +1,22 @@
 
+name: preventivo_falegname_pro
+description: Preventivo Falegname Pro
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  pdf: ^3.10.7
+  printing: ^5.11.1
+  path_provider: ^2.1.2
+  shared_preferences: ^2.2.2
+  image_picker: ^1.0.7
+  share_plus: ^8.0.2
+
+flutter:
+  uses-material-design: true
