@@ -3,29 +3,20 @@ workflows:
     name: Android APK
     max_build_duration: 60
     environment:
-      groups:
-        - google_play
       vars:
         PACKAGE_NAME: "com.preventivo.falegname.pro"
       node: 20
       java: 17
     scripts:
-      - name: Set app icon (gold plane)
+      - name: Build WebView APK
         script: |
-          echo "Icon will be set by manifest"
-      - name: Install Bubblewrap
-        script: |
-          npm install -g @bubblewrap/cli
-      - name: Build APK
-        script: |
-          rm -rf twa-project
-          mkdir twa-project
-          cd twa-project
-          bubblewrap init --manifest https://bartg80.github.io/preventivo-falegname-pro/manifest.json --directory . --manifestUrl https://bartg80.github.io/preventivo-falegname-pro/manifest.json || true
-          bubblewrap build || ./gradlew assembleDebug
+          npm install -g cordova
+          rm -rf app-build
+          cordova create app-build com.preventivo.falegname.pro "Preventivo Falegname Pro"
+          cd app-build
+          cordova platform add android@12.0.1
+          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body,iframe{margin:0;padding:0;width:100%;height:100vh;border:0;overflow:hidden} </style></head><body><iframe src="https://bartg80.github.io/preventivo-falegname-pro/"></iframe></body></html>' > www/index.html
+          cordova build android --debug
     artifacts:
-      - twa-project/app/build/outputs/**/*.apk
-      - twa-project/**/*.apk
-      - app/build/outputs/**/*.apk
-      - build/app/outputs/**/*.apk
+      - app-build/platforms/android/app/build/outputs/apk/debug/*.apk
       - "**/*.apk"
