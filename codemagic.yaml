@@ -2,23 +2,30 @@ workflows:
   android-apk:
     name: Android APK
     max_build_duration: 60
-    
     environment:
+      groups:
+        - google_play
       vars:
-        NODE_VERSION: 20
-      node: 20.20.0
+        PACKAGE_NAME: "com.preventivo.falegname.pro"
+      node: 20
       java: 17
     scripts:
-      - name: Install dependencies
-        script: |
-          npm install --legacy-peer-deps
       - name: Set app icon (gold plane)
         script: |
-          echo "Icon will be set from repo - if you uploaded master-1024.png"
+          echo "Icon will be set by manifest"
+      - name: Install Bubblewrap
+        script: |
+          npm install -g @bubblewrap/cli
       - name: Build APK
         script: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease
+          rm -rf twa-project
+          mkdir twa-project
+          cd twa-project
+          bubblewrap init --manifest https://bartg80.github.io/preventivo-falegname-pro/manifest.json --directory . --manifestUrl https://bartg80.github.io/preventivo-falegname-pro/manifest.json || true
+          bubblewrap build || ./gradlew assembleDebug
     artifacts:
-      - android/app/build/outputs/**/*.apk
+      - twa-project/app/build/outputs/**/*.apk
+      - twa-project/**/*.apk
+      - app/build/outputs/**/*.apk
+      - build/app/outputs/**/*.apk
+      - "**/*.apk"
