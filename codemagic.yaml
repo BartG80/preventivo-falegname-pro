@@ -1,50 +1,24 @@
 workflows:
-  android-workflow:
+  android-apk:
     name: Android APK
-    instance_type: mac_mini_m2
     max_build_duration: 60
+    instance_type: linux_x2
     environment:
-      flutter: stable
-      xcode: latest
-      cocoapods: default
+      vars:
+        NODE_VERSION: 20
+      node: 20.20.0
       java: 17
     scripts:
-      - name: Set up Flutter platforms
+      - name: Install dependencies
         script: |
-          flutter create . --platforms=ios,android --project-name preventivo_falegname_pro
-      - name: Get dependencies
+          npm install --legacy-peer-deps
+      - name: Set app icon (gold plane)
         script: |
-          flutter pub get
+          echo "Icon will be set from repo - if you uploaded master-1024.png"
       - name: Build APK
         script: |
-          flutter build apk --release
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
-    publishing:
-      email:
-        recipients:
-          - bart.g80@gmail.com
-  ios-workflow:
-    name: iOS IPA
-    instance_type: mac_mini_m2
-    max_build_duration: 60
-    environment:
-      flutter: stable
-      xcode: latest
-      cocoapods: default
-    scripts:
-      - name: Set up Flutter platforms
-        script: |
-          flutter create . --platforms=ios,android --project-name preventivo_falegname_pro
-      - name: Get dependencies
-        script: |
-          flutter pub get
-      - name: Build IPA (no sign)
-        script: |
-          flutter build ios --release --no-codesign
-          mkdir -p build/ios/ipa/Payload
-          cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
-          cd build/ios/ipa
-          zip -r PreventivoFalegname.ipa Payload
-    artifacts:
-      - build/ios/ipa/*.ipa
+      - android/app/build/outputs/**/*.apk
